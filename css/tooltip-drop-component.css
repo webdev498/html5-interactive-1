@@ -91,6 +91,7 @@
 
 .cbp-tm-show-below .cbp-tm-submenu {
 	top: 114%;
+	z-index: 1000;
 	/* padding-top: 10px; */
 }
 
@@ -169,7 +170,7 @@ the right position for the arrow
 .cbp-tm-submenu > li > a {
 	padding: 5px 2.3em 5px 0.6em; /* top/bottom paddings in 'em' cause a tiny "jump" in Chrome on Win */
 	display: block;
-	font-size: 12pt;
+	font-size: 10pt;
 	position: relative;
 	/* color: #47a3da; */
 	color:gray; /* PPP */

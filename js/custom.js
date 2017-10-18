@@ -11,6 +11,7 @@ let currentRoundAnswerIDs = [ 0, 0, 0, 0 ];
 
 
 const arrayMenuForGSK = ['NO VACCINATION REQUIRED', 'PEDIARIX', 'INFANRIX', 'KINRIX'];
+let dropMenu;
 
 /* Refresh the question  */
 refreshBoardWithInfo = (qInfo) => {
@@ -38,7 +39,7 @@ refreshBoardWithInfo = (qInfo) => {
     }
 
     //Init dropbox
-    menu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
+    dropMenu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
 }
 
 createDropdownMenu = (menuArray) => {
@@ -55,12 +56,15 @@ createDropdownMenu = (menuArray) => {
     return $divEl;
 }
 
+/* Event Handler : Touch to document */
+// $('document').click(function() {
+//     dropMenu.
+// });
 
 /* Event Handler : Touch to Assign clicked in all answer */
 
 $('.answer_element').click(function() {
-
-    
+ 
 });
 
 

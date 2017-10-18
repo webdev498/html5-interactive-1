@@ -112,6 +112,15 @@
 			}, this.touch ? 0 : this.options.delayMenu );
 
 		},
+		_closeOpenMenu : function() {
+			var item = el.parentNode,
+			items = Array.prototype.slice.call( this.menuRealItems )
+			
+			if( typeof this.current !== 'undefined' && items.indexOf( item ) !== this.current ) {
+				this._closeMenu( this.el.children[ this.current ].lastChild );
+				this.el.children[ this.current ].querySelector( 'ul.cbp-tm-submenu' ).setAttribute( 'data-open', 'false' );
+			}
+		},
 		_closeMenu : function( el ) {
 			
 			clearTimeout( this.omtimeout );
@@ -132,12 +141,8 @@
 				submenu = item.querySelector( 'ul.cbp-tm-submenu' )
 
 			// first close any opened one..
-			console.log('Item', item);
-			console.log('Items', items);
 			if( typeof this.current !== 'undefined' && items.indexOf( item ) !== this.current ) {
-				console.log('HER for close:', this.el);
-				console.log('HER for close:', this.el.children);
-				this._closeMenu( this.el.children[ this.current ] );
+				this._closeMenu( this.el.children[ this.current ].lastChild );
 				this.el.children[ this.current ].querySelector( 'ul.cbp-tm-submenu' ).setAttribute( 'data-open', 'false' );
 			}
 
