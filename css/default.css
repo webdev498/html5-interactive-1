@@ -1,0 +1,56 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700|Satisfy);
+
+@font-face {
+	font-family: 'agnext';
+	src:url('../fonts/agnext/AGNextRegular.otf');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'agnext-light';
+	src:url('../fonts/agnext/AGNextLight.otf');
+	font-weight: lighter;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'agnext-bold';
+	src:url('../fonts/agnext/AGNextBold.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+*, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+body, html { font-size: 100%; padding: 0; margin: 0;}
+
+body, html { 
+	font-size: 100%;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+}
+
+/* Clearfix hack by Nicolas Gallagher: http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+
+body {
+	/* font-family: 'Lato', Calibri, Arial, sans-serif; */
+	font-family: 'agnext';
+	color: #fff;
+	background: #333;
+	overflow: hidden;
+}
+
+a {
+	color: #ddd;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #fff;
+}
+
