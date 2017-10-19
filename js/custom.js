@@ -55,8 +55,8 @@ refreshBoardWithInfo = (qInfo) => {
     $('.pt-btn-try').css('display', 'none');
 
     //Disable check answer button
-    $('.pt-btn-check').toggleClass('pt-btn-check-inactive');
-    $('.pt-btn-check').toggleClass('pt-btn-check-inactive-' + currentRound);
+    $('.pt-btn-check').addClass('pt-btn-check-inactive');
+    $('.pt-btn-check').addClass('pt-btn-check-inactive-' + currentRound);
 
     //Clear the remediation box
     if ($('.answer-container-fixed')){
@@ -261,16 +261,19 @@ $('.pt-btn-next').click(function() {
         currentRound ++;
         currentAttempCount = 0;
 
+        refreshBoardWithInfo();
+
         //Save state
         saveCurrentState();
-
-        refreshBoardWithInfo();
     }
 });
 
 /* Event Handler : Try Again button clicked */
 $('.pt-btn-try').click(function() {
     refreshBoardWithInfo();
+
+    //Save state
+    saveCurrentState();
 });
 
 /* Event Handler : Close button clicked */
