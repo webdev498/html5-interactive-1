@@ -9,6 +9,16 @@ const arrayBgImgs = [
     'images/backgrounds/sanofi_bg.png',
 ];
 
+const arrayNextButtonImgs = [
+    'images/buttons/next.png',
+    'images/buttons/next_sanofi.png',
+];
+
+const arrayCheckButtonImgs = [
+    'images/buttons/check.png',
+    'images/buttons/check_sanofi.png',
+];
+
 const arrayMenus = [
     [
         {img: 'answer_none.png', text: 'NO VACCINATION REQUIRED' },
@@ -35,9 +45,15 @@ refreshBoardWithInfo = (qInfo) => {
     //Change background according to round
     $('.pt-page').css('background-image', "url(" + arrayBgImgs[currentRound] + ")");
 
+    //Update the check and next buttons according to the round
+    $('.pt-btn-check').addClass('pt-btn-check-' + currentRound);
+    $('.pt-btn-next').addClass('pt-btn-next-' + currentRound);
+
     //Hide the correct & incorrect label
     $('.correct-container').css('display', 'none');
     $('.incorrect-container').css('display', 'none');
+
+    
 
     //Display the check schedule button instead of next button
     $('.pt-btn-check').css('display', 'block');
@@ -45,6 +61,7 @@ refreshBoardWithInfo = (qInfo) => {
 
     //Disable check answer button
     $('.pt-btn-check').toggleClass('pt-btn-check-inactive');
+    $('.pt-btn-check').toggleClass('pt-btn-check-inactive-' + currentRound);
 
     //Clear the remediation box
     if ($('.answer-container-fixed')){
@@ -159,6 +176,7 @@ onSelectedAnswer = ($answerEl, answerIndex, imgSrc) => {
     checkResult = $.inArray(-1, answerArray);
     if (checkResult == -1) { 
         $('.pt-btn-check').removeClass('pt-btn-check-inactive');
+        $('.pt-btn-check').removeClass('pt-btn-check-inactive-' + currentRound);
     }
 
     //Save state

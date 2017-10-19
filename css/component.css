@@ -316,34 +316,53 @@ html, body { height: 100%; }
 	z-index: 100;
 	opacity: 1;
 }
-.pt-page .pt-btn-check img{
-	content:url("../images/buttons/check.png");
-}
-.pt-page .pt-btn-check img:active{
-	content:url("../images/buttons/check_down.png");
-}
 .pt-page .pt-btn-check-inactive {
 	pointer-events: none;
 	opacity: 0.3;
 }
-.pt-page .pt-btn-check-inactive img{
+.pt-page .pt-btn-check-0 img{
+	content:url("../images/buttons/check.png");
+}
+.pt-page .pt-btn-check-0 img:active{
+	content:url("../images/buttons/check_down.png");
+}
+.pt-page .pt-btn-check-inactive-0 img{
 	content:url("../images/buttons/check_inactive.png");
 }
 
+.pt-page .pt-btn-check-1 img{
+	content:url("../images/buttons/check_sanofi.png");
+}
+.pt-page .pt-btn-check-1 img:active{
+	content:url("../images/buttons/check_sanofi_down.png");
+}
+.pt-page .pt-btn-check-inactive-1 img{
+	content:url("../images/buttons/check_sanofi_inactive.png");
+}
 
 
+.pt-page .pt-btn-next-inactive {
+	pointer-events: none;
+	opacity: 0.3;
+}
 .pt-page .pt-btn-next img{
 	content:url("../images/buttons/next.png");
 }
 .pt-page .pt-btn-next img:active{
 	content:url("../images/buttons/next_down.png");
 }
-.pt-page .pt-btn-next-inactive {
-	pointer-events: none;
-	opacity: 0.3;
-}
 .pt-page .pt-btn-next-inactive img{
 	content:url("../images/buttons/next_inactive.png");
+}
+
+.pt-page .pt-btn-next-1 img{
+	content:url("../images/buttons/next_sanofi.png");
+}
+.pt-page .pt-btn-next-1 img:active{
+	content:url("../images/buttons/next_sanofi_down.png");
+}
+.pt-page .pt-btn-next-inactive-1 img{
+	content:url("../images/buttons/next_sanofi_inactive.png");
 }
 
 
