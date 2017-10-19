@@ -350,23 +350,3 @@ html, body { height: 100%; }
 /* --------------------------------- */
 
 
-
-
-
-.pt-btn-popup-ok {
-	pointer-events: auto;
-	position: absolute;
-	top: 500px;
-    left: 223px;
-	cursor: pointer;
-	z-index: 100;
-}
-
-.pt-btn-popup-ok img{
-	content:url("../images/buttons/ok.png");
-}
-
-.pt-btn-popup-ok img:active{
-	content:url("../images/buttons/ok_down.png");
-}
-
