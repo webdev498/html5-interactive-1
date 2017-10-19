@@ -34,6 +34,15 @@
 			return client;
 	}
 
+	function getViewportW() {
+		var client = docElem['clientWidth'],
+			inner = window['innerWidth'];
+		if( client < inner )
+			return inner;
+		else
+			return client;
+	}
+
 	// http://stackoverflow.com/a/11396681/989439
 	function getOffset( el ) {
 		return el.getBoundingClientRect();
@@ -65,16 +74,19 @@
 			this.menuRealItems = document.querySelectorAll( '.answer-container .answer-element .drop-temp');
 			this._initEvents();
 		},
-		_initEvents : function() {
-			
+		_initEvents : function() {			
 			var self = this;
-
-			console.log('menu items');
-
 			Array.prototype.slice.call( this.menuItems ).forEach( function( el, i ) {
 				var trigger = el.querySelector('.drop-temp ul');
-
 				el.addEventListener( 'click', function( ev ) { self._handleClick( trigger, ev ); } );
+
+				var arrayLis = el.querySelectorAll('.drop-temp ul li');
+				Array.prototype.slice.call( arrayLis ).forEach( function( el, i ) {
+					el.addEventListener( 'click', function( ev ) { self._handleItemClick( this, ev ); } );
+				});
+
+
+				
 
 				/*
 				if( self.touch ) {
@@ -102,27 +114,39 @@
 
 				if( submenu ) {
 					el.className = 'cbp-tm-show';
-					// if( self._positionMenu( el ) === 'top' ) {
-					// 	el.className += ' cbp-tm-show-above';
-					// }
-					// else {
-						el.className += ' cbp-tm-show-below';
-					// }
+					el.className += ' cbp-tm-show-below';
+
+					var offsetLeft = self._positionMenu( el );
+					if(offsetLeft != 999999) {
+						el.childNodes[0].style.left = offsetLeft + 'px';
+						el.childNodes[0].style.left = offsetLeft + 'px';
+
+						if(offsetLeft == 128) el.childNodes[0].className += ' cbp-tm-submenu-first';
+						else if(offsetLeft == 64) el.childNodes[0].className += ' cbp-tm-submenu-second';
+						else if(offsetLeft == -64) el.childNodes[0].className += ' cbp-tm-submenu-last-first';
+						else if(offsetLeft == 0) el.childNodes[0].className += ' cbp-tm-submenu-last-second';
+					}
 				}
+
 			}, this.touch ? 0 : this.options.delayMenu );
+
+			if (this.currentAnswerEl) {
+				this.currentAnswerEl.children( '.touch-text' ).toggleClass('touch-text-select');
+			}
 
 		},
 		_closeOpenMenu : function() {
-			var item = el.parentNode,
+			var item = $('.cbp-tm-show .cbp-tm-show-below').get(0),//el.parentNode,
 			items = Array.prototype.slice.call( this.menuRealItems )
 			
 			if( typeof this.current !== 'undefined' && items.indexOf( item ) !== this.current ) {
 				this._closeMenu( this.el.children[ this.current ].lastChild );
 				this.el.children[ this.current ].querySelector( 'ul.cbp-tm-submenu' ).setAttribute( 'data-open', 'false' );
 			}
+
 		},
 		_closeMenu : function( el ) {
-			
+		
 			clearTimeout( this.omtimeout );
 
 			var submenu = el.querySelector( 'ul.cbp-tm-submenu' );
@@ -133,6 +157,14 @@
 				el.className = el.className.replace(new RegExp("(^|\\s+)" + "cbp-tm-show-below" + "(\\s+|$)"), ' ');
 				el.className = el.className.replace(new RegExp("(^|\\s+)" + "cbp-tm-show-above" + "(\\s+|$)"), ' ');
 			}
+
+			if (this.currentAnswerEl) {
+				this.currentAnswerEl.children( '.touch-text' ).removeClass('touch-text-select');
+			}
+
+		},
+		_handleItemClick : function(el, ev) {
+			onSelectedAnswer(this.currentAnswerEl, $(el).attr('data-answer-index'), $(el).attr('data-img'));
 
 		},
 		_handleClick : function( el, ev ) {
@@ -146,31 +178,45 @@
 				this.el.children[ this.current ].querySelector( 'ul.cbp-tm-submenu' ).setAttribute( 'data-open', 'false' );
 			}
 
+			// if($(el).attr('data-open') == 'true') {
+			// 	onSelectedAnswer(this.currentAnswerEl);
+			// }
+
 			if( submenu ) {
 				ev.preventDefault();
 
 				var isOpen = submenu.getAttribute( 'data-open' );
 
 				if( isOpen === 'true' ) {
+					this.currentAnswerEl = $(el.parentNode.parentNode);
+
 					this._closeMenu( item );
 					submenu.setAttribute( 'data-open', 'false' );
 				}
 				else {
+					
+					this.currentAnswerEl = $(el.parentNode.parentNode);
+
 					this._openMenu( item );
 					this.current = items.indexOf( item );
 					submenu.setAttribute( 'data-open', 'true' );
 				}
 			}
+			else{
+				console.log('************************no submenu');
+			}
 
 		},
 		_positionMenu : function( el ) {
 			// checking where's more space left in the viewport: above or below the element
-			var vH = getViewportH(),
+			var vW = 1024,
+				width = 256,
 				ot = getOffset(el),
-				spaceUp = ot.top ,
-				spaceDown = vH - spaceUp - el.offsetHeight;
-			
-			return ( spaceDown <= spaceUp ? 'top' : 'bottom' );
+				spaceLeft = ot.left,
+				offsetLeft = spaceLeft - width / 2,
+				offsetRight = spaceLeft + width / 2 ;
+		
+			return ( offsetLeft < 0 ? -offsetLeft : (offsetRight >= 1024 ? -(offsetRight - 1024) : 999999) );
 		}
 	}
 

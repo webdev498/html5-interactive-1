@@ -84,6 +84,13 @@
 	transition: visibility 0s, opacity 0.3s;
 }
 
+/* for left and right menu offset */
+.cbp-tm-show-left .cbp-tm-submenu {
+	left: 206%;
+}
+
+/* ------------- */
+
 .cbp-tm-show-above .cbp-tm-submenu {
 	bottom: 100%;
 	padding-bottom: 10px;
@@ -143,6 +150,22 @@ the right position for the arrow
 .cbp-tm-show-below .cbp-tm-submenu:after {
 	bottom: 100%;
 	margin-bottom: 0px;
+}
+
+.cbp-tm-show-below .cbp-tm-submenu-first:after {
+	left: 32px;
+}
+
+.cbp-tm-show-below .cbp-tm-submenu-second:after {
+	left: 96px;
+}
+
+.cbp-tm-show-below .cbp-tm-submenu-last-first:after {
+	left: 224px;
+}
+
+.cbp-tm-show-below .cbp-tm-submenu-last-second:after {
+	left: 160px;
 }
 
 .cbp-tm-submenu:after {

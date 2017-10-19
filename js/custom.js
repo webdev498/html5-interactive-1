@@ -10,22 +10,54 @@ let current_round_correct_num = 0;
 let currentRoundAnswerIDs = [ 0, 0, 0, 0 ];
 
 
-const arrayMenuForGSK = ['NO VACCINATION REQUIRED', 'PEDIARIX', 'INFANRIX', 'KINRIX'];
+
+const arrayMenuForGSK = [
+    {img: 'answer_none.png', text: 'NO VACCINATION REQUIRED' },
+    {img: 'answer_ped.png', text: 'PEDIARIX' },
+    {img: 'answer_inf.png', text: 'INFANRIX' },
+    {img: 'answer_kin.png', text: 'KINRIX' },
+];
 let dropMenu;
+
+let correctGSKAnswerIndexes = [];
+let correctSanofiAnswerIndexes = [];
+let answerArray = [];
+let currentRound = 0;
 
 /* Refresh the question  */
 refreshBoardWithInfo = (qInfo) => {
+    //Hide the correct & incorrect label
+    $('.correct-container').css('display', 'none');
+    $('.incorrect-container').css('display', 'none');
+
+    //Display the check schedule button instead of next button
+    $('.pt-btn-check').css('display', 'block');
+    $('.pt-btn-next').css('display', 'none');
+
+    //Disable check answer button
+    $('.pt-btn-check').toggleClass('pt-btn-check-inactive');
+
+    //Clear the remediation box
+    if ($('.answer-container-fixed')){
+        $('.answer-container-fixed').remove();
+    }
+
     //Get the answer container div
     $answerContainer = $('.answer-container');
 
     //Clear inside it
     $answerContainer.empty();
 
+    //Clear answer array
+    answerArray = [];
+
     //Create the touch-div
     const countTouchDiv = 16;
     const answerDivWidth = 64;
     for (i = 0; i < countTouchDiv; i ++) {
-        $answerDiv = $( "<div class='answer-element'></div>" );
+        answerArray.push(-1);
+
+        $answerDiv = $( "<div class='answer-element' data-menu-index=" + i + "></div>" );
         $touchTextDiv = $( "<div class='touch-text'>Touch to Assign</div>" );
 
         $answerDiv.css('left', i * answerDivWidth);
@@ -42,12 +74,13 @@ refreshBoardWithInfo = (qInfo) => {
     dropMenu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
 }
 
+/* Create the dropdown menu */
 createDropdownMenu = (menuArray) => {
     $divEl = $('<div class="drop-temp"></div>');
     $ulElement = $("<ul class='cbp-tm-submenu'></ul>");
 
     $.each(menuArray, function( index, menuObj ) {
-        $liEl = $("<li><a class='cbp-tm-icon-archive'>" + menuObj + "</a></li>");
+        $liEl = $("<li data-answer-index=" + index + " data-img='" + menuObj.img + "'><a class='dropdown-menu-item'>" + menuObj.text + "</a></li>");
         $ulElement.append($liEl);
     });
 
@@ -56,27 +89,127 @@ createDropdownMenu = (menuArray) => {
     return $divEl;
 }
 
-/* Event Handler : Touch to document */
-// $('document').click(function() {
-//     dropMenu.
-// });
+/* Document Event Handler : Touch to document for drop menu close*/
+$(document).click(function(e) {
+    let targetClassName = $(e.target).attr('class');
+    // console.log('target class', targetClassName);
+    if (targetClassName && !targetClassName.includes('touch-text') && !targetClassName.includes('answer-element')) {
+        dropMenu._closeOpenMenu();
+    }
+    
+});
 
-/* Event Handler : Touch to Assign clicked in all answer */
+createRemediation = (correntAnswerArray) => {
+    //Get the answer container div
+    $answerContainer = $('<div class="answer-container answer-container-fixed"></div>');
 
-$('.answer_element').click(function() {
- 
+    //Add the background image
+    $divBgIm = $('<div class="bg-img"></div>');
+    $answerContainer.append($divBgIm);
+
+
+    //Create the touch-div
+    const countTouchDiv = 16;
+    const answerDivWidth = 64;
+    for (i = 0; i < countTouchDiv; i ++) {
+        correctAnswerIndex = correntAnswerArray[i];
+
+        $answerDiv = $( "<div class='answer-element'></div>" );
+        $answerDiv.css('left', i * answerDivWidth);
+
+        $imgEl = $('<img src="images/buttons/' + arrayMenuForGSK[correctAnswerIndex].img + '"></img>');
+        $answerImgDiv = $( "<div class='answer-image-div'></div>" );
+        $answerImgDiv.append($imgEl);
+
+        $answerDiv.append($answerImgDiv);
+
+        $answerContainer.append($answerDiv);
+    }
+
+    return $answerContainer;
+}
+
+/* Event Handler : Clicked on the one answer on the dropdown */
+onSelectedAnswer = ($answerEl, answerIndex, imgSrc) => {
+    const menuIndex = $answerEl.attr('data-menu-index');
+
+    //Update the content according to the answer
+    $divEl = $('<div class="answer-image-div"></div>');
+    $imgEl = $('<img src="images/buttons/' + imgSrc + '"></img>');
+    $divEl.append($imgEl);
+
+    $answerEl.find(':first-child').first().replaceWith($divEl);
+
+    //Update the answer array
+    answerArray[menuIndex * 1] = answerIndex;
+
+    //Check if all are picked
+    checkResult = $.inArray(-1, answerArray);
+    if (checkResult == -1) { 
+        $('.pt-btn-check').removeClass('pt-btn-check-inactive');
+    }
+}
+
+/* Check the answer result */
+
+checkAnswersResult = () => {
+
+    const countAnswerCountsPerRound = 16;
+    let correctAnswerIndexes;
+    if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
+    else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
+
+    let correctNum = 0;
+    for (i = 0; i < countAnswerCountsPerRound; i ++) {
+        if (answerArray[i] != correctAnswerIndexes[i]) break;
+        correctNum ++;
+    }
+
+    if (correctNum == countAnswerCountsPerRound)
+        return true;
+    else
+        return false;
+}
+
+/* Event Handler : Check button clicked */
+$('.pt-btn-check').click(function() {
+    //Display the next schedule button instead of check button
+    $('.pt-btn-next').css('display', 'block');
+    $('.pt-btn-check').css('display', 'none');
+
+    //Check answers
+    if(checkAnswersResult() == true) {
+        //Show correct label
+        $('.correct-container').css('display', 'block');
+    }
+    else{
+        //Show incorrect label
+        $('.incorrect-container').css('display', 'block');
+
+        //Show correct answer
+        let correctAnswerIndexes;
+        if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
+        else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
+        $remediationBox = createRemediation(correctAnswerIndexes);
+        $('.pt-page').append($remediationBox);
+    }
+});
+
+/* Event Handler : Next button clicked */
+$('.pt-btn-next').click(function() {
+    if (currentRound == 0) {
+        currentRound ++;
+        refreshBoardWithInfo();
+    }
 });
 
 
 /* Document Ready for initial work */
 
 $(document ).ready(function() {
+    
     //At first, refresh the board
     refreshBoardWithInfo();
-
-
-    //Disable Start Button
-    $('.pt-btn-begin').toggleClass('pt-btn-begin-inactive');
 
     if (navigator.onLine) {
         //Send the responses reporting to server if exists
@@ -89,11 +222,7 @@ $(document ).ready(function() {
             isNetworkOnline = true;
 
             //Get Activity JSON
-            $.post("https://gsk.mc3tt.com/tabletop/activities/getactivity/", { activity_id: 124 }, function(data){
-
-                //Enable Start Button
-                $('.pt-btn-begin').removeClass('pt-btn-begin-inactive');
-                $('.pt-btn-begin').toggleClass('pulse-button');
+            $.post("https://gsk.mc3tt.com/tabletop/activities/getactivity/", { activity_id: 129 }, function(data){
 
                 //Get the quiz info
                 QuizDetail = $.parseJSON(data);
@@ -102,7 +231,7 @@ $(document ).ready(function() {
                 localStorage.setItem("activity_json", data);
 
                 //Update the screens with queries
-                updateQuestionsAndAnswers(QuizDetail['Activity124']);
+                updateQuestionsAndAnswers(QuizDetail['Activity129']);
                 
             })
                 .fail(function() {
@@ -122,7 +251,7 @@ $(document ).ready(function() {
                 else {
                     QuizDetail = $.parseJSON(activity_json);
                     //Update the screens with queries
-                    updateQuestionsAndAnswers(QuizDetail['Activity124']);
+                    updateQuestionsAndAnswers(QuizDetail['Activity129']);
 
                     //Enable Start Button
                     $('.pt-btn-begin').removeClass('pt-btn-begin-inactive');
@@ -141,63 +270,38 @@ $(document ).ready(function() {
 /* Update the questions and answers with activity json info */
 
 updateQuestionsAndAnswers = (quizInfo) => {
-    //Update the questions for 3 rounds (12 questions totally)
-    for (i = 1; i <= 12; i ++) {
-        questionStr = quizInfo['Question' + i][2][1];
-        roundNum = Math.floor((i - 1) / 4) + 1;
-        questionNum = (i - 1) % 4 + 1;
-        $('#round-' + roundNum + '-' + questionNum + '-question').children().first().text(questionStr);
-        $('#round-' + roundNum + '-' + questionNum + '-question-answer').children().first().text(questionStr);
+
+    //Get the GSK answers
+    correctGSKAnswerIndexes = [];
+    for (i = 1; i <= 16; i ++) {
+        correctAnswerID = quizInfo['Question' + i][4][1];
+
+        answers = quizInfo['Question' + i][5][1].split('&&');
+        $.each(answers, function( index, answerObj ) {
+            answerID = answerObj.split('||')[0];
+            if (answerID == correctAnswerID) {
+                correctGSKAnswerIndexes.push(index);
+            }
+        });
     }
 
-    //Update the answers and add the answers dropdown data
-    for (round = 1; round <= 3; round ++) {
-        for (index = 1; index <= 4; index ++) {
-            let questionIndex = (round - 1) * 4 + index;
-            let correctAnswerID = quizInfo['Question' + questionIndex][4][1];
-            let answersArray = quizInfo['Question' + questionIndex][5][1].split('&&');
+    //Get Sanofi answers
+    correctSanofiAnswerIndexes = [];
+    for (i = 17; i <= 32; i ++) {
+        correctAnswerID = quizInfo['Question' + i][4][1];
 
-            let strTargetID = 'round-' + round + '-' + index + '-dropdown';
-            var $targetDropDown = $('#' + strTargetID);
-            let correctAnswerValue;
-
-            //Clear dropdown
-            $targetDropDown.empty();
-            
-            //Add the default option
-            let nameValue = 'answersGroup-' + questionIndex;
-            let IDValue = 'answer-id-default-' + questionIndex;
-            var $newRadio = $( "<input type='radio' name='" + nameValue + "' value='" + IDValue + "' checked='checked' id='" + IDValue + "'>" );
-            var $newLabel = $( "<label for='answer-id-0'>Touch Here to Select Answer</label>" );
-            $targetDropDown.append($newRadio);
-            $targetDropDown.append($newLabel);
-
-            //Add real answers below
-            $.each(answersArray, function( index, answerObj ) {
-                let answerID = answerObj.split('||')[0];
-                let answerString = answerObj.split('||')[1];
-                //Test purpose
-                // answerString = 'answer-STRING-' + answerID; 
-                /////////////
-
-                if (answerID == correctAnswerID) {
-                    correctAnswerValue = answerString;
-                }
-
-                let IDValue = 'answer-id-' + answerID;
-                var $newRadio = $( "<input type='radio' name='" + nameValue + "' value='" + IDValue + "' id='" + IDValue + "'>" );
-                var $newLabel = $( "<label for='" + IDValue + "'>" + answerString + "</label>" );
-
-                $targetDropDown.append($newRadio);
-                $targetDropDown.append($newLabel);
-
-            });
-
-            //Set correct answer label in answer result screen
-            $targetCorrectAnswerLabel = $('#round-' + round + '-' + index + '-correct-answer');
-            $targetCorrectAnswerLabel.children().first().text(correctAnswerValue);
-        }
+        answers = quizInfo['Question' + i][5][1].split('&&');
+        $.each(answers, function( index, answerObj ) {
+            answerID = answerObj.split('||')[0];
+            if (answerID == correctAnswerID) {
+                correctSanofiAnswerIndexes.push(index);
+            }
+        });
     }
+
+    console.log('=======correct answer indexes:', correctGSKAnswerIndexes);
+    console.log('=======correct answer indexes:', correctSanofiAnswerIndexes);
+
 }
 
 /* Store the reports to localStorage */
@@ -427,7 +531,7 @@ resetWithState = (state) => {
     current_round_correct_num = 0;
 
     //Update the screens with queries
-    updateQuestionsAndAnswers(QuizDetail['Activity124']);
+    updateQuestionsAndAnswers(QuizDetail['Activity129']);
 
     //Go to the corresponding screen
     PageTransitions.gotoPage(Answer_Pass_Index * 2 + 1);
