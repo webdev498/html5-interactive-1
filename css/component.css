@@ -297,7 +297,7 @@ html, body { height: 100%; }
 }
 
 /* ----------------- Check and Next Buttons ---------------- */
-.pt-btn-check, .pt-btn-next {
+.pt-btn-check, .pt-btn-next, .pt-btn-try {
 	pointer-events: auto;
 	-webkit-transition: opacity 0.3s linear 0.5s;
 	-moz-transition: opacity 0.3s linear 0.5s;
@@ -363,6 +363,25 @@ html, body { height: 100%; }
 }
 .pt-page .pt-btn-next-inactive-1 img{
 	content:url("../images/buttons/next_sanofi_inactive.png");
+}
+
+
+.pt-page .pt-btn-try-inactive {
+	pointer-events: none;
+	opacity: 0.3;
+}
+.pt-page .pt-btn-try img{
+	content:url("../images/buttons/try.png");
+}
+.pt-page .pt-btn-try img:active{
+	content:url("../images/buttons/try_down.png");
+}
+
+.pt-page .pt-btn-try-1 img{
+	content:url("../images/buttons/try_sanofi.png");
+}
+.pt-page .pt-btn-try-1 img:active{
+	content:url("../images/buttons/try_sanofi_down.png");
 }
 
 

@@ -5,6 +5,50 @@ $(document ).ready(function() {
         sendStoredReportToServer();
     }
 
+    if (loadLastState() == false) { //Tried to load the last state first. If failed~~~~~~~~~~~
+        
+        if (navigator.onLine) { // ------------- Online mode -----------
+            isNetworkOnline = true;
+
+            //Get Activity JSON
+            $.post("https://gsk.mc3tt.com/tabletop/activities/getactivity/", { activity_id: 129 }, function(data){
+
+                //Get the quiz info
+                QuizDetail = $.parseJSON(data);
+
+                //Store browser support
+                localStorage.setItem("activity_json", data);
+
+                //Update the screens with queries
+                updateQuestionsAndAnswers(QuizDetail['Activity129']);
+                
+            })
+                .fail(function() {
+                    console.log('Something went wrong!');
+                });
+        }
+        else { // ---------------- Offline mode-------------
+            isNetworkOnline = false;
+
+            //Check if browser supports the local storage
+            if (typeof(Storage) !== "undefined") {
+                let activity_json = localStorage.getItem("activity_json");
+                if (!activity_json) {
+                    $('#popup-alert-internet-div').css('display', 'block');
+                    return;
+                }
+                else {
+                    QuizDetail = $.parseJSON(activity_json);
+                    //Update the screens with queries
+                    updateQuestionsAndAnswers(QuizDetail['Activity129']);
+                }
+            } else {
+                alert('Sorry! No Web Storage support..');
+            }
+            
+        }
+    }
+
 });
 
 /* Store the reports to localStorage */
@@ -111,8 +155,8 @@ resetWithState = (state) => {
     if (navigator.onLine) isNetworkOnline = true;
     else isNetworkOnline = false;
 
-    answerArray = lastState.currentAnswerSelection;
-    if (!answerArray) answerArray = [];
+    lastAnswerArray = lastState.currentAnswerSelection;
+    if (!lastAnswerArray) lastAnswerArray = [];
 
     currentRound = lastState.currentRound;
 
@@ -120,8 +164,8 @@ resetWithState = (state) => {
     updateQuestionsAndAnswers(QuizDetail['Activity129']);
 
     //Go to the corresponding screen
-    
+    refreshBoardWithInfo();
 
-    //Set the current round answer section with saved one
-    
+    //Load the last answer selection
+    // loadLastAnswers(lastAnswerArray);
 }

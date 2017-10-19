@@ -1,22 +1,17 @@
 let isNetworkOnline = false;
 
 let QuizDetail;
-let totalCorrectNum = 0;
-let current_round_correct_num = 0;
+const MAX_ATTEMP_COUNT = 2;
+let currentAttempCount = 0;
 
 const arrayBgImgs = [
     'images/backgrounds/gsk_bg.png',
     'images/backgrounds/sanofi_bg.png',
 ];
 
-const arrayNextButtonImgs = [
-    'images/buttons/next.png',
-    'images/buttons/next_sanofi.png',
-];
-
-const arrayCheckButtonImgs = [
-    'images/buttons/check.png',
-    'images/buttons/check_sanofi.png',
+const arrayRemBgImgs = [
+    'images/backgrounds/remediation_bg.png',
+    'images/backgrounds/remediation_sanofi_bg.png',
 ];
 
 const arrayMenus = [
@@ -48,16 +43,16 @@ refreshBoardWithInfo = (qInfo) => {
     //Update the check and next buttons according to the round
     $('.pt-btn-check').addClass('pt-btn-check-' + currentRound);
     $('.pt-btn-next').addClass('pt-btn-next-' + currentRound);
+    $('.pt-btn-try').addClass('pt-btn-try-' + currentRound);
 
     //Hide the correct & incorrect label
     $('.correct-container').css('display', 'none');
     $('.incorrect-container').css('display', 'none');
 
-    
-
     //Display the check schedule button instead of next button
     $('.pt-btn-check').css('display', 'block');
     $('.pt-btn-next').css('display', 'none');
+    $('.pt-btn-try').css('display', 'none');
 
     //Disable check answer button
     $('.pt-btn-check').toggleClass('pt-btn-check-inactive');
@@ -98,9 +93,6 @@ refreshBoardWithInfo = (qInfo) => {
 
     //Init dropbox
     dropMenu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
-
-    //Save state
-    saveCurrentState();
 }
 
 /* Create the dropdown menu */
@@ -221,6 +213,7 @@ $('.pt-btn-check').click(function() {
     //Display the next schedule button instead of check button
     $('.pt-btn-next').css('display', 'block');
     $('.pt-btn-check').css('display', 'none');
+    $('.pt-btn-try').css('display', 'none');
 
     //Check answers
     if(checkAnswersResult() == true) {
@@ -228,15 +221,37 @@ $('.pt-btn-check').click(function() {
         $('.correct-container').css('display', 'block');
     }
     else{
-        //Show incorrect label
-        $('.incorrect-container').css('display', 'block');
+        currentAttempCount ++;
+        if (currentAttempCount >= MAX_ATTEMP_COUNT) {
+            //Update the incorrect description
+            $('.incorrect-container .incorrect-description').html('Please review the correct immunization schedule below.<br/>Touch the Next Schedule button to continue');
+            //Show incorrect label
+            $('.incorrect-container').css('display', 'block');
+        
+            //Show correct answer
+            let correctAnswerIndexes;
+            if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
+            else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
+            $remediationBox = createRemediation(correctAnswerIndexes);
+            $('.pt-page').append($remediationBox);
+    
+            //Update the background of remediation bg according to round
+            $('.answer-container-fixed .bg-img').css('background-image', "url(" + arrayRemBgImgs[currentRound] + ")");
+        }
+        else
+        {
+            //Display the try again button instead of next button
+            $('.pt-btn-next').css('display', 'none');
+            $('.pt-btn-check').css('display', 'none');
+            $('.pt-btn-try').css('display', 'block');
 
-        //Show correct answer
-        let correctAnswerIndexes;
-        if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
-        else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
-        $remediationBox = createRemediation(correctAnswerIndexes);
-        $('.pt-page').append($remediationBox);
+            //Update the incorrect description
+            $('.incorrect-container .incorrect-description').html('Touch Try Again. <br/>Review/reassign your responses and then touch Check Answer.');
+            //Show incorrect label
+            $('.incorrect-container').css('display', 'block');
+
+        }
+        
     }
 });
 
@@ -244,8 +259,18 @@ $('.pt-btn-check').click(function() {
 $('.pt-btn-next').click(function() {
     if (currentRound == 0) {
         currentRound ++;
+        currentAttempCount = 0;
+
+        //Save state
+        saveCurrentState();
+
         refreshBoardWithInfo();
     }
+});
+
+/* Event Handler : Try Again button clicked */
+$('.pt-btn-try').click(function() {
+    refreshBoardWithInfo();
 });
 
 /* Event Handler : Close button clicked */
@@ -262,51 +287,6 @@ $(document ).ready(function() {
     
     //At first, refresh the board
     refreshBoardWithInfo();
-
-    if (loadLastState() == false) { //Tried to load the last state first. If failed~~~~~~~~~~~
-    
-        if (navigator.onLine) { // ------------- Online mode -----------
-            isNetworkOnline = true;
-
-            //Get Activity JSON
-            $.post("https://gsk.mc3tt.com/tabletop/activities/getactivity/", { activity_id: 129 }, function(data){
-
-                //Get the quiz info
-                QuizDetail = $.parseJSON(data);
-
-                //Store browser support
-                localStorage.setItem("activity_json", data);
-
-                //Update the screens with queries
-                updateQuestionsAndAnswers(QuizDetail['Activity129']);
-                
-            })
-                .fail(function() {
-                    console.log('Something went wrong!');
-                });
-        }
-        else { // ---------------- Offline mode-------------
-            isNetworkOnline = false;
-
-            //Check if browser supports the local storage
-            if (typeof(Storage) !== "undefined") {
-                let activity_json = localStorage.getItem("activity_json");
-                if (!activity_json) {
-                    $('#popup-alert-internet-div').css('display', 'block');
-                    return;
-                }
-                else {
-                    QuizDetail = $.parseJSON(activity_json);
-                    //Update the screens with queries
-                    updateQuestionsAndAnswers(QuizDetail['Activity129']);
-                }
-            } else {
-                alert('Sorry! No Web Storage support..');
-            }
-            
-        }
-    }
-
 });
 
 /* Update the questions and answers with activity json info */
