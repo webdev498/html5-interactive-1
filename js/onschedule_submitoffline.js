@@ -1,4 +1,7 @@
 $(document ).ready(function() {
+    //At first, refresh the board
+    refreshBoardWithInfo();
+    
 
     if (navigator.onLine) {
         //Send the responses reporting to server if exists
@@ -167,5 +170,5 @@ resetWithState = (state) => {
     refreshBoardWithInfo();
 
     //Load the last answer selection
-    // loadLastAnswers(lastAnswerArray);
+    loadLastAnswers(lastAnswerArray);
 }

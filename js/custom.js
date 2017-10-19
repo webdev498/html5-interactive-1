@@ -37,6 +37,9 @@ let currentRound = 0;
 
 /* Refresh the question  */
 refreshBoardWithInfo = (qInfo) => {
+    console.log('refresh called');
+
+
     //Change background according to round
     $('.pt-page').css('background-image', "url(" + arrayBgImgs[currentRound] + ")");
 
@@ -176,6 +179,32 @@ onSelectedAnswer = ($answerEl, answerIndex, imgSrc) => {
 
 }
 
+/* Fill the answers of last state */
+loadLastAnswers = (lastAnswerArray) => {
+
+    $("#answer-container .answer-element").each(function(index) {
+        correctAnswerIndex = lastAnswerArray[index];
+        if (correctAnswerIndex < 0) return;
+
+        //Update the content according to the answer
+        $divEl = $('<div class="answer-image-div"></div>');
+        $imgEl = $('<img src="images/buttons/' + arrayMenus[currentRound][correctAnswerIndex].img + '"></img>');
+        $divEl.append($imgEl);
+
+        $(this).find(':first-child').first().replaceWith($divEl);
+
+        //Update the answer array
+        answerArray[index] = lastAnswerArray[index];
+    });
+
+    //Check if all are picked
+    checkResult = $.inArray(-1, answerArray);
+    if (checkResult == -1) { 
+        $('.pt-btn-check').removeClass('pt-btn-check-inactive');
+        $('.pt-btn-check').removeClass('pt-btn-check-inactive-' + currentRound);
+    }
+}
+
 /* Check the answer result */
 
 checkAnswersResult = () => {
@@ -283,14 +312,6 @@ $('.pt-btn-close').click(function() {
 });
 
 
-
-/* Document Ready for initial work */
-
-$(document ).ready(function() {
-    
-    //At first, refresh the board
-    refreshBoardWithInfo();
-});
 
 /* Update the questions and answers with activity json info */
 
