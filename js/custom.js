@@ -67,6 +67,9 @@ refreshBoardWithInfo = (qInfo) => {
         $('.answer-container-fixed').remove();
     }
 
+    //Enable the answer dropdown 
+    $('.answer-container').css('pointer-events', 'auto');
+
     //Get the answer container div
     $answerContainer = $('.answer-container');
 
@@ -258,12 +261,15 @@ $('.pt-btn-check').click(function() {
             //Show incorrect label
             $('.incorrect-container').css('display', 'block');
         
-            //Show correct answer
+            //Show correct answer remediation
             let correctAnswerIndexes;
             if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
             else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
             $remediationBox = createRemediation(correctAnswerIndexes);
             $('.pt-page').append($remediationBox);
+
+            //Disable the dropdown when remediation
+            $('.answer-container').css('pointer-events', 'none');
     
             //Update the background of remediation bg according to round
             $('.answer-container-fixed .bg-img').css('background-image', "url(" + arrayRemBgImgs[currentRound] + ")");
