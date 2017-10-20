@@ -37,9 +37,8 @@ let answerArray = [];
 let currentRound = 0;
 
 /* Refresh the question  */
-refreshBoardWithInfo = (qInfo) => {
+refreshBoardWithInfo = (isRefreshAnswer = true) => {
     console.log('refresh called');
-
 
     //Change background according to round
     $('.pt-page').css('background-image', "url(" + arrayBgImgs[currentRound] + ")");
@@ -70,36 +69,40 @@ refreshBoardWithInfo = (qInfo) => {
     //Enable the answer dropdown 
     $('.answer-container').css('pointer-events', 'auto');
 
-    //Get the answer container div
-    $answerContainer = $('.answer-container');
+    if (isRefreshAnswer) { 
+        //Get the answer container div
+        $answerContainer = $('.answer-container');
 
-    //Clear inside it
-    $answerContainer.empty();
+        //Clear inside it
+        $answerContainer.empty();
 
-    //Clear answer array
-    answerArray = [];
+        //Clear answer array
+        answerArray = [];
 
-    //Create the touch-div
-    const countTouchDiv = 16;
-    const answerDivWidth = 64;
-    for (i = 0; i < countTouchDiv; i ++) {
-        answerArray.push(-1);
+        //Set const variable for dropdown menu touch area
+        const countTouchDiv = 16;
+        const answerDivWidth = 64;  
 
-        $answerDiv = $( "<div class='answer-element' data-menu-index=" + i + "></div>" );
-        $touchTextDiv = $( "<div class='touch-text'>Touch to Assign</div>" );
+        //Create the touch-div
+        for (i = 0; i < countTouchDiv; i ++) {
+            answerArray.push(-1);
 
-        $answerDiv.css('left', i * answerDivWidth);
-        $answerDiv.append($touchTextDiv);
+            $answerDiv = $( "<div class='answer-element' data-menu-index=" + i + "></div>" );
+            $touchTextDiv = $( "<div class='touch-text'>Touch to Assign</div>" );
 
-        $dropdownMenu = createDropdownMenu(arrayMenus[currentRound]);
-        $answerDiv.append($dropdownMenu);
+            $answerDiv.css('left', i * answerDivWidth);
+            $answerDiv.append($touchTextDiv);
 
-        $answerContainer.append($answerDiv);
-        
+            $dropdownMenu = createDropdownMenu(arrayMenus[currentRound]);
+            $answerDiv.append($dropdownMenu);
+
+            $answerContainer.append($answerDiv);
+            
+        }
+
+        //Init dropbox
+        dropMenu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
     }
-
-    //Init dropbox
-    dropMenu = new cbpTooltipMenu( document.getElementById( 'answer-container' ) );
 }
 
 /* Create the dropdown menu */
@@ -309,7 +312,7 @@ $('.pt-btn-next').click(function() {
 
 /* Event Handler : Try Again button clicked */
 $('.pt-btn-try').click(function() {
-    refreshBoardWithInfo();
+    refreshBoardWithInfo(false); //Don't refresh the answers
 
     //Save state
     saveCurrentState();
