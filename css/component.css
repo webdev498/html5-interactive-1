@@ -176,6 +176,20 @@ html, body { height: 100%; }
     background-attachment: fixed;
     width: 1024px;
 	height: 748px;
+	position: fixed;
+    z-index: 200;
+	display: none;
+}
+
+/* Popup for congret */
+.congret-container {
+	background-image: url("../images/backgrounds/congret.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    width: 1024px;
+	height: 748px;
+	position: fixed;
+    z-index: 100;
 	display: none;
 }
 

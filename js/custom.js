@@ -1,6 +1,7 @@
 let isNetworkOnline = false;
 
 let QuizDetail;
+const MAX_ROUND = 2;
 const MAX_ATTEMP_COUNT = 2;
 let currentAttempCount = 0;
 
@@ -286,7 +287,7 @@ $('.pt-btn-check').click(function() {
 
 /* Event Handler : Next button clicked */
 $('.pt-btn-next').click(function() {
-    if (currentRound == 0) {
+    if (currentRound + 1 < MAX_ROUND) {
         currentRound ++;
         currentAttempCount = 0;
 
@@ -294,6 +295,9 @@ $('.pt-btn-next').click(function() {
 
         //Save state
         saveCurrentState();
+    }
+    else {
+        $('.congret-container').css('display', 'block');
     }
 });
 
