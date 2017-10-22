@@ -25,8 +25,8 @@ const arrayMenus = [
 
     [
         {img: 'answer_none.png', text: 'NO VACCINATION REQUIRED' },
-        {img: 'answer_dap.png', text: 'DAPTACEL' },
         {img: 'answer_pen.png', text: 'PENTACEL' },
+        {img: 'answer_dap.png', text: 'DAPTACEL' },
     ]
 ];
 let dropMenu;
