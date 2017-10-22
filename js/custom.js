@@ -251,6 +251,9 @@ $('.pt-btn-check').click(function() {
     $('.pt-btn-check').css('display', 'none');
     $('.pt-btn-try').css('display', 'none');
 
+    //Disable the dropdown when remediation
+    $('.answer-container').css('pointer-events', 'none');
+
     //Check answers
     if(checkAnswersResult() == true) {
         //Show correct label
@@ -270,9 +273,6 @@ $('.pt-btn-check').click(function() {
             else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
             $remediationBox = createRemediation(correctAnswerIndexes);
             $('.pt-page').append($remediationBox);
-
-            //Disable the dropdown when remediation
-            $('.answer-container').css('pointer-events', 'none');
     
             //Update the background of remediation bg according to round
             $('.answer-container-fixed .bg-img').css('background-image', "url(" + arrayRemBgImgs[currentRound] + ")");
