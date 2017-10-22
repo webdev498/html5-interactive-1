@@ -226,7 +226,7 @@ checkAnswersResult = () => {
         if (answerArray[i] == correctAnswerIndexes[i]) correctNum ++;
 
         //Post answer result to server or localstorage
-        score = 100;
+        score = 0;
         questionInfo = QuizDetail['Activity129']['Question' + ((i * 1 + 1) + (currentRound * countAnswerCountsPerRound))];       
         questionID = questionInfo[0][1];
         answerID = questionInfo[5][1].split('&&')[answerArray[i]].split('||')[0];
