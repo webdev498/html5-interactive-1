@@ -93,7 +93,6 @@ sendStoredReportToServer = () => {
 sendReportToServer = (question_id, answer_id, score) => {
     let localInfo = $.parseJSON(currentJSONString);
 
-    console.log('asdfasdfasdf', localInfo);
     let eventID = localInfo.TTInfoDictionary.TTInfo[0][1];
     let userID = localInfo.TTInfoDictionary.TTInfo[1][1];
 
@@ -108,7 +107,7 @@ sendReportToServer = (question_id, answer_id, score) => {
                 score: score
             }, function(data){
 
-            console.log('====== Successfully Reported ========', question_id, answer_id);
+            // console.log('====== Successfully Reported ========', question_id, answer_id);
             
         })
             .fail(function() {
@@ -119,12 +118,14 @@ sendReportToServer = (question_id, answer_id, score) => {
 
 /* Save the current state */
 
-saveCurrentState = () => {
+saveCurrentState = (stageIndex) => {
     currentRound = currentRound;
 
     state = {
         currentRound: currentRound,
-        currentAnswerSelection: answerArray
+        currentAnswerSelection: answerArray,
+        currentAttempt: currentAttempCount,
+        answerStageIndex: currentAnswerStage,
     }
     localStorage.setItem("lastState", JSON.stringify(state));
 }
@@ -162,13 +163,26 @@ resetWithState = (state) => {
     if (!lastAnswerArray) lastAnswerArray = [];
 
     currentRound = lastState.currentRound;
+    currentAttempCount = lastState.currentAttempt;
+    currentAnswerStage = lastState.answerStageIndex;
 
     //Update the screens with queries
     updateQuestionsAndAnswers(QuizDetail['Activity129']);
 
-    //Go to the corresponding screen
-    refreshBoardWithInfo();
+    if (currentRound < MAX_ROUND) {
+        //Go to the corresponding screen
+        refreshBoardWithInfo();
 
-    //Load the last answer selection
-    loadLastAnswers(lastAnswerArray);
+        //Load the last answer selection
+        loadLastAnswers(lastAnswerArray);
+
+        //Load the attempt status
+        loadAttemptStatus();
+    }
+    else 
+    {
+        goToCongret();
+    }
+
+    
 }

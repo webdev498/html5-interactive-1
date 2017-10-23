@@ -4,6 +4,7 @@ let QuizDetail;
 const MAX_ROUND = 2;
 const MAX_ATTEMP_COUNT = 2;
 let currentAttempCount = 0;
+let currentAnswerStage = 0;
 
 const arrayBgImgs = [
     'images/backgrounds/gsk_bg.png',
@@ -212,6 +213,12 @@ loadLastAnswers = (lastAnswerArray) => {
     }
 }
 
+loadAttemptStatus = () => {
+    if (currentAnswerStage == 1 || currentAnswerStage == 3) {
+        updateBoardElements();
+    }
+}
+
 /* Check the answer result */
 
 checkAnswersResult = () => {
@@ -244,8 +251,8 @@ checkAnswersResult = () => {
         return false;
 }
 
-/* Event Handler : Check button clicked */
-$('.pt-btn-check').click(function() {
+updateBoardElements = () => {
+    console.log('call here');
     //Display the next schedule button instead of check button
     $('.pt-btn-next').css('display', 'block');
     $('.pt-btn-check').css('display', 'none');
@@ -260,8 +267,7 @@ $('.pt-btn-check').click(function() {
         $('.correct-container').css('display', 'block');
     }
     else{
-        currentAttempCount ++;
-        if (currentAttempCount >= MAX_ATTEMP_COUNT) {
+        if ((currentAttempCount + 1) >= MAX_ATTEMP_COUNT) {
             //Update the incorrect description
             $('.incorrect-container .incorrect-description').html('Please review the correct immunization schedule below.<br/>Touch the Next Schedule button to continue');
             //Show incorrect label
@@ -290,8 +296,17 @@ $('.pt-btn-check').click(function() {
             $('.incorrect-container').css('display', 'block');
 
         }
-        
     }
+}
+
+/* Event Handler : Check button clicked */
+$('.pt-btn-check').click(function() {
+
+    updateBoardElements();
+
+    //Save state
+    currentAnswerStage = currentAttempCount * 2 + 1;
+    saveCurrentState();
 });
 
 /* Event Handler : Next button clicked */
@@ -301,20 +316,29 @@ $('.pt-btn-next').click(function() {
         currentAttempCount = 0;
 
         refreshBoardWithInfo();
-
-        //Save state
-        saveCurrentState();
     }
     else {
-        $('.congret-container').css('display', 'block');
+        //current round is a final congret screen
+        currentRound ++;
+
+        //Show congret page
+        goToCongret();
     }
+
+    //Save state
+    currentAnswerStage = 0;
+    saveCurrentState();
 });
 
 /* Event Handler : Try Again button clicked */
 $('.pt-btn-try').click(function() {
+    //Increase the try count
+    currentAttempCount ++;
+
     refreshBoardWithInfo(false); //Don't refresh the answers
 
     //Save state
+    currentAnswerStage = 2;
     saveCurrentState();
 });
 
@@ -323,6 +347,11 @@ $('.pt-btn-try').click(function() {
 $('.pt-btn-close').click(function() {
     window.location.href = "../index.html";
 });
+
+/* Navigator functions for Pages */
+goToCongret = () => {
+    $('.congret-container').css('display', 'block');
+}
 
 
 
