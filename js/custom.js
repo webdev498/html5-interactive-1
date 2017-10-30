@@ -30,10 +30,10 @@ const arrayMenus = [
         {img: 'answer_dap.png', text: 'DAPTACEL' },
     ]
 ];
+
+let correctAnswerIndexesArray = [];
 let dropMenu;
 
-let correctGSKAnswerIndexes = [];
-let correctSanofiAnswerIndexes = [];
 let answerArray = [];
 let currentRound = 0;
 
@@ -224,9 +224,7 @@ loadAttemptStatus = () => {
 checkAnswersResult = () => {
 
     const countAnswerCountsPerRound = 16;
-    let correctAnswerIndexes;
-    if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
-    else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
+    let correctAnswerIndexes = correctAnswerIndexesArray[currentRound];
 
     let correctNum = 0;
     for (i = 0; i < countAnswerCountsPerRound; i ++) {
@@ -274,9 +272,7 @@ updateBoardElements = () => {
             $('.incorrect-container').css('display', 'block');
         
             //Show correct answer remediation
-            let correctAnswerIndexes;
-            if (currentRound == 0) correctAnswerIndexes = correctGSKAnswerIndexes;  //GSK
-            else correctAnswerIndexes = correctSanofiAnswerIndexes;  //Sanofi
+            let correctAnswerIndexes = correctAnswerIndexesArray[currentRound];
             $remediationBox = createRemediation(correctAnswerIndexes);
             $('.pt-page').append($remediationBox);
     
@@ -358,6 +354,8 @@ goToCongret = () => {
 /* Update the questions and answers with activity json info */
 
 updateQuestionsAndAnswers = (quizInfo) => {
+    //Initialize
+    correctAnswerIndexesArray = [];
 
     //Get the GSK answers
     correctGSKAnswerIndexes = [];
@@ -372,6 +370,7 @@ updateQuestionsAndAnswers = (quizInfo) => {
             }
         });
     }
+    correctAnswerIndexesArray.push(correctGSKAnswerIndexes);
 
     //Get Sanofi answers
     correctSanofiAnswerIndexes = [];
@@ -386,6 +385,7 @@ updateQuestionsAndAnswers = (quizInfo) => {
             }
         });
     }
+    correctAnswerIndexesArray.push(correctSanofiAnswerIndexes);
 
     console.log('=======correct answer indexes:', correctGSKAnswerIndexes);
     console.log('=======correct answer indexes:', correctSanofiAnswerIndexes);
